@@ -21,8 +21,8 @@ BASE_DIR = Path(
 # scope a query to one convocatoria. Previously hardcoded directly in tribunales.py's
 # BASE_URL — now a single place to change them for a different convocatoria/year.
 
-ANYO = os.getenv("ANYO", "2026")
-CONVOCATORIA = os.getenv("CONVOCATORIA", "OPOPRI26")
+ANYO = os.getenv("ANYO", "2024")
+CONVOCATORIA = os.getenv("CONVOCATORIA", "OPOPRI24")
 
 # ============================================================
 # CUERPO

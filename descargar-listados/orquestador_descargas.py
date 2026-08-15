@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(
 # convocatorias en una sola ejecución (ANYO/CONVOCATORIA se pasan a config.py por
 # variable de entorno, ver ese fichero).
 CONVOCATORIAS = [
-    {"anyo": "2026", "convocatoria": "OPOPRI26"},
+    {"anyo": "2024", "convocatoria": "OPOPRI24"},
 ]
 
 ESPECIALIDADES = [
