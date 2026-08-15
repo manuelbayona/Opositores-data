@@ -122,11 +122,47 @@ descargas/
     <CUERPO>-<ESPECIALIDAD>/
       html/            # respuesta completa de cada tribunal consultado (para depurar)
       pdf/              # solo los PDFs que pasaron el filtro de interés
+    xlsx/
+      <ANYO>-<CONVOCATORIA>_resultados.xlsx   # generado por extraer_resultados.py
 ```
 
 Si el descubrimiento automático de tribunales no encuentra ninguno para una
 especialidad, se guarda la respuesta cruda en
 `html/debug_ajaxOpcionesTribunal_<especialidad>.html` para poder revisar por qué.
+
+## Extraer los datos de los PDFs a Excel
+
+Una vez descargados los PDFs de una convocatoria (todas sus especialidades),
+`extraer_resultados.py` los recorre todos y genera un único Excel con los datos ya
+estructurados:
+
+```bash
+ANYO=2024 CONVOCATORIA=OPOPRI24 python3 extraer_resultados.py
+```
+
+Reconoce el PDF por su contenido (no por el nombre de fichero) y lo manda a una de
+dos familias:
+
+- **Puntuaciones**: calificaciones/puntuaciones de cualquier prueba (columnas
+  `Orden`, `Acceso`, `Identificador`, `Opositor`, `Parte A`/`Parte B` cuando la
+  prueba las tiene, `Puntuación`).
+- **Baremación**: listado de méritos (columnas `T.Ap.1`, `T.Ap.2`, `T.Ap.3`,
+  `Baremo`, `Ap.1.1`...`Ap.3.7` — leídas de la propia cabecera del PDF, no fijas en
+  el código, porque cambian según el tipo de acceso).
+
+Cada tribunal republica el mismo listado varias veces (correcciones, provisional →
+definitivo). No se descarta ninguna versión — el Excel trae una hoja con **todas**
+las versiones y otra solo con la **última** (`Es_Ultima_Version=True`, la de fecha
+más reciente por especialidad+tribunal+tipo de publicación) para trabajar
+directamente con esa sin tener que filtrar a mano.
+
+Si alguna fila no se puede interpretar con confianza (formato distinto al
+esperado), se guarda igualmente pero con la columna `Valores sin interpretar`
+rellena en vez de rellenar el resto de columnas con un valor adivinado — así se
+puede revisar a mano sin que se cuele un dato incorrecto en el resto de la hoja.
+Los PDFs sin ninguna de las dos cabeceras reconocidas (p.ej. un aviso de trámite que
+coló el filtro de descarga) se listan al final por consola como
+"FORMATO NO RECONOCIDO", sin frenar el resto del proceso.
 
 ## Aviso importante: el portal puede bloquear la petición
 
