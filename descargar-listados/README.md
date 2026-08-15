@@ -26,11 +26,24 @@ https://github.com/manuelbayona/Opositores-data/pull/new/feature/descargar-lista
 
 ## Instalación
 
+**Linux / macOS:**
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
+
+**Windows (CMD):**
+
+```bat
+py -m venv .venv
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+```
+
+(`py` es el lanzador de Python en Windows; si no está disponible usa `python` en su
+lugar. Tras `activate.bat` el prompt debe mostrar `(.venv)` delante de la ruta.)
 
 ## Configuración
 
@@ -51,6 +64,8 @@ no hace falta editar ningún fichero para probar con otra convocatoria/especiali
 
 ## Ejecutar
 
+**Linux / macOS:**
+
 Una sola especialidad/convocatoria (la que esté configurada, por defecto EI /
 OPOPRI26 / 2026):
 
@@ -69,6 +84,34 @@ Todas las especialidades de las convocatorias listadas en
 
 ```bash
 python3 orquestador_descargas.py
+```
+
+**Windows (CMD):**
+
+Con el entorno virtual activado (`.venv\Scripts\activate.bat`), una sola
+especialidad/convocatoria (por defecto EI / OPOPRI26 / 2026):
+
+```bat
+python descargar_listados.py
+```
+
+Otra especialidad sin tocar el código — en `cmd.exe` las variables de entorno se
+fijan con `set` en una línea aparte, no delante del comando como en Linux:
+
+```bat
+set ESPECIALIDAD=PRI
+python descargar_listados.py
+```
+
+(Ese `set` deja `ESPECIALIDAD` fijada para el resto de la sesión de CMD. Para
+volver al valor por defecto, cierra y abre una ventana nueva, o `set ESPECIALIDAD=`
+para vaciarla.)
+
+Todas las especialidades de las convocatorias listadas en
+`orquestador_descargas.py`:
+
+```bat
+python orquestador_descargas.py
 ```
 
 ## Dónde queda todo
