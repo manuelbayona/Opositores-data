@@ -4,13 +4,13 @@ from pathlib import Path
 # ============================================================
 # BASE
 # ============================================================
-# Portable by default (relative to this repo, next to discover-data/) instead of a
-# hardcoded per-machine path. Override with BASE_DIR to keep downloads elsewhere.
+# Portable by default (next to this script) instead of a hardcoded per-machine path.
+# Override with BASE_DIR to keep downloads elsewhere.
 
 BASE_DIR = Path(
     os.getenv(
         "BASE_DIR",
-        str(Path(__file__).resolve().parent.parent / "descargas"),
+        str(Path(__file__).resolve().parent / "descargas"),
     )
 )
 

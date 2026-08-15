@@ -1,0 +1,94 @@
+# Descargar listados de interés
+
+Descarga únicamente los PDFs de resultados publicados por tribunal —calificaciones
+de primera/segunda prueba, puntuaciones (provisionales/definitivas), listados de
+baremación (méritos), aprobados en fase de oposición— filtrando por el título real
+que el propio portal le da a cada publicación. Ignora citaciones, plazos de
+alegaciones y demás documentos puramente administrativos.
+
+Es una versión aparte de `discover-data/descargar_listados.py` (mismo contenido),
+pensada para poder ejecutarse y probarse de forma aislada sin depender del resto del
+pipeline (`extraer_notas.py`, `txt_a_excel.py`, etc.).
+
+## Instalación
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Configuración
+
+Todo lo configurable vive en `config.py`, sobreescribible por variable de entorno —
+no hace falta editar ningún fichero para probar con otra convocatoria/especialidad:
+
+| Variable | Por defecto | Qué es |
+|---|---|---|
+| `ANYO` | `2026` | Año de la convocatoria en Educarm |
+| `CONVOCATORIA` | `OPOPRI26` | Código de convocatoria en Educarm |
+| `CUERPO` | `0597` | Código de cuerpo (0597 = Maestros) |
+| `ESPECIALIDAD` | `EI` | Especialidad a consultar (ver `ESPECIALIDADES` en `config.py` para los códigos) |
+| `TRIBUNAL_DESDE` / `TRIBUNAL_HASTA` | `1` / `50` | Solo se usa como respaldo si el descubrimiento automático de tribunales no encuentra ninguno |
+| `PALABRAS_CLAVE_INTERES` | `calificaciones,puntuaciones,baremacion,merito,aprobados,seleccionados` | Un PDF se descarga si su nombre o su título contiene alguna de estas palabras (sin tildes/mayúsculas) |
+| `PALABRAS_CLAVE_EXCLUIR` | `citacion,plazo de presentacion,resolucion provisional,apertura de cabeceras` | Veto sobre lo anterior — descarta citaciones administrativas aunque mencionen de pasada una palabra de interés |
+| `BASE_DIR` | `./descargas` (junto a este script) | Carpeta raíz donde se guarda todo |
+| `EDUCARM_COOKIE` | (vacío) | Normalmente innecesario — ver más abajo |
+
+## Ejecutar
+
+Una sola especialidad/convocatoria (la que esté configurada, por defecto EI /
+OPOPRI26 / 2026):
+
+```bash
+python3 descargar_listados.py
+```
+
+Otra especialidad sin tocar el código:
+
+```bash
+ESPECIALIDAD=PRI python3 descargar_listados.py
+```
+
+Todas las especialidades de las convocatorias listadas en
+`orquestador_descargas.py` (edítalo para añadir más convocatorias):
+
+```bash
+python3 orquestador_descargas.py
+```
+
+## Dónde queda todo
+
+```
+descargas/
+  <ANYO>-<CONVOCATORIA>/
+    <CUERPO>-<ESPECIALIDAD>/
+      html/            # respuesta completa de cada tribunal consultado (para depurar)
+      pdf/              # solo los PDFs que pasaron el filtro de interés
+```
+
+Si el descubrimiento automático de tribunales no encuentra ninguno para una
+especialidad, se guarda la respuesta cruda en
+`html/debug_ajaxOpcionesTribunal_<especialidad>.html` para poder revisar por qué.
+
+## Aviso importante: el portal puede bloquear la petición
+
+Esto llama directamente a un endpoint real de Educarm
+(`servicios.educarm.es/admin/index2.php`). Ese portal tiene protección anti-bot
+(WAF de Radware) que en nuestras pruebas **bloqueó las peticiones hechas con
+`curl`/`requests` desde un entorno de servidor/sandbox** (403, cabecera
+`server: rdwr`), pero **sí dejó pasar la misma petición exacta capturada desde un
+navegador real** (200, cabecera `rdwr_response: allowed`) — no es un problema de
+cookies ni de sesión, es huella de navegador (TLS/HTTP2), y no hay forma de
+solucionarlo desde este script sin intentar sortear esa protección, cosa que
+deliberadamente no se ha hecho aquí.
+
+En la práctica: pruébalo primero tú, desde tu propio ordenador/red normal. Si te
+devuelve 403 en vez de descargar nada, es ese bloqueo — no un bug del script.
+
+## Fuente de esta lógica
+
+El flujo (descubrir tribunales → pedir publicaciones → filtrar por título) y el
+patrón exacto de los enlaces de descarga están verificados contra capturas reales
+del portal en `../2026-murcia-maestros/requests/` (`response4.har` en particular,
+que trae el HTML completo de una respuesta real de `getPublicaciones`).
