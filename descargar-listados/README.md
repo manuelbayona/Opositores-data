@@ -10,6 +10,20 @@ Es una versión aparte de `discover-data/descargar_listados.py` (mismo contenido
 pensada para poder ejecutarse y probarse de forma aislada sin depender del resto del
 pipeline (`extraer_notas.py`, `txt_a_excel.py`, etc.).
 
+## Cómo obtener esta rama
+
+Todavía no está en `main` — está en la rama `feature/descargar-listados-interes`,
+pendiente de que la pruebes tú antes de abrir la PR:
+
+```bash
+git fetch origin feature/descargar-listados-interes
+git checkout feature/descargar-listados-interes
+cd descargar-listados
+```
+
+PR (aún no abierta):
+https://github.com/manuelbayona/Opositores-data/pull/new/feature/descargar-listados-interes
+
 ## Instalación
 
 ```bash
